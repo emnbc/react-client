@@ -5,6 +5,7 @@ import { LinkPage } from "./views/LinkPage";
 import { HomePage } from "./views/HomePage";
 import { MainLayout } from "./components/layout/MainLayout";
 import { NoMatch } from "./components/utils/NaMatch";
+import { LoginPage } from "./views/LoginPage";
 
 export default class App extends React.Component {
   render() {
@@ -16,6 +17,7 @@ export default class App extends React.Component {
             <Route index element={<HomePage />} />
             <Route path="link" element={<LinkPage />} />
           </Route>
+          <Route path="login" element={<LoginPage />} />
           <Route path="*" element={<NoMatch />} />
         </Routes>
       </div>
