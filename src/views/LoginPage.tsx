@@ -1,34 +1,79 @@
-import React from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import { Navigate } from "react-router-dom";
 import { style } from "typestyle";
+import { Auth } from "../services/http";
+import { LocalStore } from "../utils/store";
+import { useAuth } from "../components/providers/AuthProvider";
 
-export class LoginPage extends React.Component {
-  render() {
-    return (
-      <div className={loginStyles}>
-        <Form className={`m-auto ${formStyles}`}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
-            <Form.Control type="email" placeholder="Enter email" />
-          </Form.Group>
+export const LoginPage = () => {
+  const auth = useAuth();
 
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
-          </Form.Group>
+  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  
+  const getUserData = useCallback(() => {
+    Auth.me().then((res) => {
+      auth.updateLogin(res.data);
+      setLoggedIn(true);
+    });
+  }, [auth]);
 
-          <Form.Group className="mb-3" controlId="formBasicCheckbox">
-            <Form.Check type="checkbox" label="Check me out" />
-          </Form.Group>
+  useEffect(() => {
+    const token = LocalStore.getToken();
 
-          <Button variant="primary" type="submit">
-            Submit
-          </Button>
-        </Form>
-      </div>
-    );
-  }
-}
+    if (token && !auth.isLoggedIn) {
+      getUserData();
+    }
+  }, [auth, getUserData]);
+
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    Auth.login({ username, password }).then((res) => {
+      if (res.data && res.data.accessToken) {
+        LocalStore.setToken(res.data.accessToken);
+        getUserData();
+      }
+    });
+  };
+
+  return isLoggedIn ? (
+    <Navigate to="/" />
+  ) : (
+    <div className={loginStyles}>
+      <Form className={`m-auto ${formStyles}`} onSubmit={handleSubmit}>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter email"
+            onChange={(event) => setUsername(event.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicCheckbox">
+          <Form.Check type="checkbox" label="Check me out" />
+        </Form.Group>
+
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </Form>
+    </div>
+  );
+};
 
 const loginStyles = style({
   display: "flex",

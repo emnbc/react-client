@@ -1,24 +1,32 @@
 import React from "react";
 import { style } from "typestyle";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { Header } from "./Header";
 
-export class MainLayout extends React.Component {
-  render() {
-    const isAuth = true;  // auth condition
+interface MainProps {
 
-    if (isAuth) {
-      return (
-        <>
-          <Header />
-          <div className={`container ${containerStyles}`}>
-            <Outlet />
-          </div>
-        </>
-      );
-    } else {
-      return <Navigate to="/login" />;
-    }
+}
+
+interface MainState {
+  isLoading: boolean;
+  isAuth: boolean;
+}
+
+export class MainLayout extends React.Component<MainProps, MainState> {
+
+  componentDidMount(): void {
+    console.log('MainLayout componentDidMount');
+  }
+
+  render() {
+    return (
+      <>
+        <Header />
+        <div className={`container ${containerStyles}`}>
+          <Outlet />
+        </div>
+      </>
+    );
   }
 }
 

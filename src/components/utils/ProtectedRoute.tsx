@@ -1,18 +1,10 @@
-import React from "react";
-import { Route, RouteProps, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthProvider";
 
-export class ProtectedRoute extends React.Component<RouteProps> {
-  constructor(props: Readonly<RouteProps>) {
-    super(props);
-  }
+export const ProtectedRoute = ({ element }: { element: JSX.Element }) => {
+  // const location = useLocation();
+  const auth = useAuth();
+  console.log("ProtectedRoute");
 
-  public render() {
-    const authenticated = true; // auth condition
-
-    if (authenticated) {
-      return <Route {...this.props} />;
-    } else {
-      return <Navigate to={{ pathname: "/login" }} />;
-    }
-  }
-}
+  return auth.isLoggedIn ? element : <Navigate to="/login" />;
+};
