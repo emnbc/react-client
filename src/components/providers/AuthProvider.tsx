@@ -14,29 +14,36 @@ export interface User {
 export interface AuthContextType {
   isLoggedIn: boolean;
   user: User;
-  updateLogin: (userData: User) => void;
+  logIn: (userData: User) => void;
+  logOut: () => void;
 }
 
 export let AuthContext = React.createContext<AuthContextType>(null!);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setLoginState] = React.useState<boolean>(false);
   const [user, setUser] = React.useState<User>(null!);
 
-  const updateLogin = (userData: User) => {
+  const logIn = (userData: User) => {
     setUser(userData);
     setLoginState(true);
+  };
+
+  const logOut = () => {
+    setUser(null!);
+    setLoginState(false);
   };
 
   const value = {
     isLoggedIn,
     user,
-    updateLogin,
+    logIn,
+    logOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+};
 
 export const useAuth = () => {
   return React.useContext(AuthContext);
-}
+};

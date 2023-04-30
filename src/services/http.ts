@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import { LocalStore } from "../utils/store";
+import { LocalStore } from "../utils/local-store";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 

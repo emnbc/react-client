@@ -3,7 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import { Navigate } from "react-router-dom";
 import { style } from "typestyle";
 import { Auth } from "../services/http";
-import { LocalStore } from "../utils/store";
+import { LocalStore } from "../utils/local-store";
 import { useAuth } from "../components/providers/AuthProvider";
 
 export const LoginPage = () => {
@@ -15,7 +15,7 @@ export const LoginPage = () => {
   
   const getUserData = useCallback(() => {
     Auth.me().then((res) => {
-      auth.updateLogin(res.data);
+      auth.logIn(res.data);
       setLoggedIn(true);
     });
   }, [auth]);
