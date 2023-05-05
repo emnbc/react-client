@@ -2,6 +2,7 @@ import { Button } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../providers/AuthProvider";
 import { LocalStore } from "../../utils/local-store";
+import { style } from "typestyle";
 
 export const Header = () => {
   const auth = useAuth();
@@ -11,6 +12,10 @@ export const Header = () => {
     auth.logOut();
     LocalStore.setToken("");
     navigate("/login");
+  };
+
+  const toMain = () => {
+    navigate("/");
   };
 
   const listMenu = menuItems.map((item, index) => (
@@ -45,9 +50,9 @@ export const Header = () => {
   return (
     <nav className="navbar navbar-expand navbar-dark bg-dark">
       <div className="container">
-        <a className="navbar-brand" href="/">
+        <span className={`navbar-brand ${logoStyles}`} onClick={toMain}>
           React Client
-        </a>
+        </span>
         <div className="navbar-collapse">
           <ul className="navbar-nav me-auto mb-0">{listMenu}</ul>
           {form}
@@ -74,3 +79,7 @@ const menuItems = [
     disabled: true,
   },
 ];
+
+const logoStyles = style({
+  cursor: "pointer",
+});
