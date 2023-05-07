@@ -57,10 +57,10 @@ export const LoginPage = () => {
           </div>
         )}
         <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label>Email address</Form.Label>
+          <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter email"
+            placeholder="Enter username"
             disabled={isLoading}
             onChange={(event) => setUsername(event.target.value)}
           />
@@ -70,7 +70,7 @@ export const LoginPage = () => {
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
-            placeholder="Password"
+            placeholder="Enter password"
             disabled={isLoading}
             onChange={(event) => setPassword(event.target.value)}
           />
