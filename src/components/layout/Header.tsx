@@ -69,8 +69,8 @@ const menuItems = [
     disabled: false,
   },
   {
-    name: "Link",
-    path: "/link",
+    name: "User List",
+    path: "/user-list",
     disabled: false,
   },
   {

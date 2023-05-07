@@ -6,6 +6,7 @@ import axios, {
 import { LocalStore } from "../utils/local-store";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { UserItem } from "../models/users";
 
 const authorizedClient = axios.create();
 
@@ -26,7 +27,7 @@ export const AxiosInterceptor = ({ children }: { children: JSX.Element }) => {
   useEffect(() => {
     const resInterceptor = (response: AxiosResponse) => response;
     const errInterceptor = (error: AxiosError) => {
-      if (error.status === 401) {
+      if (error.response?.status === 401) {
         LocalStore.setToken("");
         navigate("/login");
       }
@@ -52,10 +53,12 @@ export const Auth = {
     return authorizedClient.post("/api/v1/logout", data);
   },
   me: () => {
-    return authorizedClient.get("/api/auth/me", {
-      headers: {
-        "Content-Type": "application/json", // TODO: set global
-      },
-    });
+    return authorizedClient.get("/api/auth/me");
+  },
+};
+
+export const Users = {
+  getList: () => {
+    return authorizedClient.get<UserItem[]>("/api/users");
   },
 };
