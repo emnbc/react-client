@@ -1,5 +1,5 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Form, Spinner } from "react-bootstrap";
 import { Navigate } from "react-router-dom";
 import { style } from "typestyle";
 import { Auth } from "../services/http";
@@ -10,34 +10,40 @@ export const LoginPage = () => {
   const auth = useAuth();
 
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  
+
   const getUserData = useCallback(() => {
-    Auth.me().then((res) => {
-      auth.logIn(res.data);
-      setLoggedIn(true);
-    });
+    Auth.me()
+      .then((res) => {
+        auth.logIn(res.data);
+        setLoading(false);
+        setLoggedIn(true);
+      })
+      .catch(() => setLoading(false));
   }, [auth]);
 
   useEffect(() => {
     const token = LocalStore.getToken();
 
     if (token && !auth.isLoggedIn) {
+      setLoading(true);
       getUserData();
     }
   }, [auth, getUserData]);
 
-
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    Auth.login({ username, password }).then((res) => {
-      if (res.data && res.data.accessToken) {
-        LocalStore.setToken(res.data.accessToken);
-        getUserData();
-      }
-    });
+    setLoading(true);
+    Auth.login({ username, password })
+      .then((res) => {
+        if (res.data && res.data.accessToken) {
+          LocalStore.setToken(res.data.accessToken);
+          getUserData();
+        }
+      })
+      .catch(() => setLoading(false));
   };
 
   return isLoggedIn ? (
@@ -45,11 +51,17 @@ export const LoginPage = () => {
   ) : (
     <div className={loginStyles}>
       <Form className={`m-auto ${formStyles}`} onSubmit={handleSubmit}>
+        {isLoading && (
+          <div className={spinnerStyles}>
+            <Spinner animation="border" variant="secondary" />
+          </div>
+        )}
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter email"
+            disabled={isLoading}
             onChange={(event) => setUsername(event.target.value)}
           />
         </Form.Group>
@@ -59,6 +71,7 @@ export const LoginPage = () => {
           <Form.Control
             type="password"
             placeholder="Password"
+            disabled={isLoading}
             onChange={(event) => setPassword(event.target.value)}
           />
         </Form.Group>
@@ -67,7 +80,7 @@ export const LoginPage = () => {
           <Form.Check type="checkbox" label="Check me out" />
         </Form.Group>
 
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" disabled={isLoading}>
           Submit
         </Button>
       </Form>
@@ -85,6 +98,18 @@ const loginStyles = style({
 });
 
 const formStyles = style({
+  position: "relative",
   width: "100%",
   maxWidth: "360px",
+});
+
+const spinnerStyles = style({
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
 });
