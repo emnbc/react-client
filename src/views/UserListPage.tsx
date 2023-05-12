@@ -58,7 +58,7 @@ export class UserListPage extends React.Component<
       <div>
         <h2>User List Page</h2>
         <div>
-          <Table striped>
+          <Table>
             <thead>
               <tr>
                 <th>#</th>
