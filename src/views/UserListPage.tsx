@@ -24,8 +24,15 @@ export class UserListPage extends React.Component<
   }
 
   componentDidMount(): void {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.setState({ ...this.state, isLoading: true });
     Users.getList().then((res) => {
-      this.setState({ ...this.state, tableData: res.data });
+      this.setState({ ...this.state, tableData: res.data, isLoading: false });
+    }).catch(() => {
+      this.setState({ ...this.state, isLoading: false });
     });
   }
 
@@ -40,6 +47,12 @@ export class UserListPage extends React.Component<
         <td>{item.email}</td>
       </tr>
     ));
+
+    const loading = (
+      <tr>
+        <td colSpan={6} align="center">Loading...</td>
+      </tr>
+    )
 
     return (
       <div>
@@ -56,7 +69,7 @@ export class UserListPage extends React.Component<
                 <th>Email</th>
               </tr>
             </thead>
-            <tbody>{list}</tbody>
+            <tbody>{this.state.isLoading ? loading : list}</tbody>
           </Table>
         </div>
       </div>
