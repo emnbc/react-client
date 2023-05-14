@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { Button, Form, Spinner } from "react-bootstrap";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { style } from "typestyle";
 import { Auth } from "../services/http";
 import { LocalStore } from "../utils/local-store";
@@ -8,6 +8,8 @@ import { useAuth } from "../components/providers/AuthProvider";
 
 export const LoginPage = () => {
   const auth = useAuth();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -35,6 +37,7 @@ export const LoginPage = () => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     setLoading(true);
     Auth.login({ username, password })
       .then((res) => {
@@ -47,7 +50,7 @@ export const LoginPage = () => {
   };
 
   return isLoggedIn ? (
-    <Navigate to="/" />
+    <Navigate to={from} />
   ) : (
     <div className={loginStyles}>
       <Form className={`m-auto ${formStyles}`} onSubmit={handleSubmit}>

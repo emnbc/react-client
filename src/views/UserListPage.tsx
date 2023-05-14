@@ -2,6 +2,7 @@ import React from "react";
 import { Users } from "../services/http";
 import { UserItem } from "../models/users";
 import { Table } from "react-bootstrap";
+import { shortDate } from "../utils/date-time";
 
 interface UserListProps {}
 
@@ -29,20 +30,22 @@ export class UserListPage extends React.Component<
 
   loadUsers() {
     this.setState({ ...this.state, isLoading: true });
-    Users.getList().then((res) => {
-      this.setState({ ...this.state, tableData: res.data, isLoading: false });
-    }).catch(() => {
-      this.setState({ ...this.state, isLoading: false });
-    });
+    Users.getList()
+      .then((res) => {
+        this.setState({ ...this.state, tableData: res.data, isLoading: false });
+      })
+      .catch(() => {
+        this.setState({ ...this.state, isLoading: false });
+      });
   }
 
   render() {
     const list = this.state.tableData.map((item, index) => (
-      <tr>
+      <tr key={item.id}>
         <td>{index + 1}</td>
         <td>{item.firstName}</td>
         <td>{item.lastName}</td>
-        <td>{item.birthDate}</td>
+        <td>{shortDate(item.birthDate)}</td>
         <td>{item.username}</td>
         <td>{item.email}</td>
       </tr>
@@ -50,9 +53,11 @@ export class UserListPage extends React.Component<
 
     const loading = (
       <tr>
-        <td colSpan={6} align="center">Loading...</td>
+        <td colSpan={6} align="center">
+          Loading...
+        </td>
       </tr>
-    )
+    );
 
     return (
       <div>
