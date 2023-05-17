@@ -8,7 +8,7 @@ import { NoMatch } from "./components/utils/NaMatch";
 import { LoginPage } from "./views/LoginPage";
 import { AuthProvider } from "./components/providers/AuthProvider";
 import { AxiosInterceptor } from "./services/http";
-import { ProtectedRoute } from "./components/utils/ProtectedRoute";
+import { Protected } from "./components/utils/ProtectedRoute";
 
 export default class App extends React.Component {
   render() {
@@ -21,17 +21,14 @@ export default class App extends React.Component {
               <Route element={<MainLayout />}>
                 <Route
                   path="/"
-                  element={
-                    <ProtectedRoute element={<HomePage />} />
-                  }
+                  element={<Protected element={<HomePage />} />}
                 />
                 <Route
                   path="user-list"
-                  element={
-                    <ProtectedRoute element={<UserListPage />} />
-                  }
+                  element={<Protected element={<UserListPage />} />}
                 />
               </Route>
+              {/* Auth NOT required */}
               <Route path="login" element={<LoginPage />} />
               <Route path="*" element={<NoMatch />} />
             </Routes>

@@ -18,6 +18,10 @@ export const Header = () => {
     navigate("/");
   };
 
+  const getFullName = () => {
+    return `${auth.user?.firstName}!`;
+  };
+
   const listMenu = menuItems.map((item, index) => (
     <li className="nav-item" key={index}>
       <NavLink
@@ -35,16 +39,19 @@ export const Header = () => {
   ));
 
   const form = (
-    <Button
-      onClick={() => {
-        logOut();
-      }}
-      variant="secondary"
-      size="sm"
-      type="button"
-    >
-      Log Out
-    </Button>
+    <div className={userBlockStyles}>
+      <div className="text-white-50">Hello, {getFullName()}</div>
+      <Button
+        onClick={() => {
+          logOut();
+        }}
+        variant="secondary"
+        size="sm"
+        type="button"
+      >
+        Log Out
+      </Button>
+    </div>
   );
 
   return (
@@ -82,4 +89,11 @@ const menuItems = [
 
 const logoStyles = style({
   cursor: "pointer",
+});
+
+const userBlockStyles = style({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "16px",
 });
