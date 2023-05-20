@@ -4,7 +4,7 @@ export class HomePage extends React.Component {
   render() {
     return (
       <div>
-        <h2>HomePage</h2>
+        <h2>Home</h2>
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
           ultricies commodo fringilla. Sed dictum leo vitae odio sagittis

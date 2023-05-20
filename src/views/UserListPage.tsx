@@ -61,7 +61,7 @@ export class UserListPage extends React.Component<
 
     return (
       <div>
-        <h2>User List Page</h2>
+        <h2>User List</h2>
         <div>
           <Table>
             <thead>
