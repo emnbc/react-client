@@ -1,80 +1,80 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Button, Form, Spinner } from "react-bootstrap";
+import { FormEvent, useEffect, useState } from "react";
+import { Alert, Button, Form, Spinner } from "react-bootstrap";
 import { Navigate, useLocation } from "react-router-dom";
 import { style } from "typestyle";
 import { Auth } from "../services/http";
 import { LocalStore } from "../utils/local-store";
-import { useAuth } from "../components/providers/AuthProvider";
+import { fetchUser, selectUser } from "../reducers/user-slice";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+
 
 export const LoginPage = () => {
-  const auth = useAuth();
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
   const from = location.state?.from?.pathname || "/";
 
-  const [isLoggedIn, setLoggedIn] = useState<boolean>(false);
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const [isLoginLoading, setLoginLoading] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const getUserData = useCallback(() => {
-    Auth.me()
-      .then((res) => {
-        auth.logIn(res.data);
-        setLoading(false);
-        setLoggedIn(true);
-      })
-      .catch(() => setLoading(false));
-  }, [auth]);
+  const userState = useAppSelector(selectUser);
 
   useEffect(() => {
     const token = LocalStore.getToken();
 
-    if (token && !auth.isLoggedIn) {
-      setLoading(true);
-      getUserData();
+    if (token && !userState.isLoggedIn) {
+      setLoginLoading(true);
+      dispatch(fetchUser());
+      setLoginLoading(false);
     }
-  }, [auth, getUserData]);
+  }, [dispatch, userState]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    setLoading(true);
+    setLoginLoading(true);
     Auth.login({ username, password })
       .then((res) => {
         if (res.data && res.data.accessToken) {
           LocalStore.setToken(res.data.accessToken);
-          getUserData();
+          dispatch(fetchUser());
+          setLoginLoading(false);
         }
       })
-      .catch(() => setLoading(false));
+      .catch(() => setLoginLoading(false));
   };
 
-  return isLoggedIn ? (
+  const loading = () => {
+    return userState.isLoading || isLoginLoading;
+  };
+
+  return userState.isLoggedIn ? (
     <Navigate to={from} />
   ) : (
     <div className={loginStyles}>
       <Form className={`m-auto ${formStyles}`} onSubmit={handleSubmit}>
-        {isLoading && (
+        {loading() && (
           <div className={spinnerStyles}>
             <Spinner animation="border" variant="secondary" />
           </div>
         )}
-        <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form.Group className="mb-3" controlId="formUsername">
           <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter username"
-            disabled={isLoading}
+            disabled={loading()}
             onChange={(event) => setUsername(event.target.value)}
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="formBasicPassword">
+        <Form.Group className="mb-3" controlId="formPassword">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
             placeholder="Enter password"
-            disabled={isLoading}
+            disabled={loading()}
             onChange={(event) => setPassword(event.target.value)}
           />
         </Form.Group>
@@ -83,9 +83,13 @@ export const LoginPage = () => {
           <Form.Check type="checkbox" label="Check me out" />
         </Form.Group>
 
-        <Button variant="primary" type="submit" disabled={isLoading}>
+        <Button variant="primary" type="submit" disabled={loading()}>
           Submit
         </Button>
+
+        {userState.isError && (
+          <Alert variant="danger" className="mt-3">Something went wrong.</Alert>
+        )}
       </Form>
     </div>
   );

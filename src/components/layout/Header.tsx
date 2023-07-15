@@ -1,33 +1,33 @@
 import { Button, Modal } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../providers/AuthProvider";
-import { LocalStore } from "../../utils/local-store";
 import { style } from "typestyle";
 import { useState } from "react";
+import { reset, selectUser } from "../../reducers/user-slice";
+import { LocalStore } from "../../utils/local-store";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 export const Header = () => {
-  const [show, setShow] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const auth = useAuth();
+  const userState = useAppSelector(selectUser);
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleYes = () => {
-    setShow(false);
+    setShowConfirmation(false);
     logOut();
   };
 
   const logOut = () => {
-    auth.logOut();
     LocalStore.setToken("");
-    navigate("/login");
+    dispatch(reset());
   };
 
-  const toMain = () => {
-    navigate("/");
-  };
+  const toMain = () => navigate("/");
 
   const getFullName = () => {
-    return `${auth.user?.firstName}!`;
+    return `${userState.user?.firstName}!`;
   };
 
   const listMenu = menuItems.map((item, index) => (
@@ -51,7 +51,7 @@ export const Header = () => {
       <div className="text-white-50">Hello, {getFullName()}</div>
       <Button
         onClick={() => {
-          setShow(true);
+          setShowConfirmation(true);
         }}
         variant="secondary"
         size="sm"
@@ -75,10 +75,10 @@ export const Header = () => {
           </div>
         </div>
       </nav>
-      <Modal show={show} onHide={() => setShow(false)}>
+      <Modal show={showConfirmation} onHide={() => setShowConfirmation(false)}>
         <Modal.Body>Are you sure you want to log out?</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow(false)}>
+          <Button variant="secondary" onClick={() => setShowConfirmation(false)}>
             Cancel
           </Button>
           <Button variant="primary" onClick={handleYes}>

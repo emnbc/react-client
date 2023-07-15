@@ -1,11 +1,12 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../providers/AuthProvider";
+import { selectUser } from "../../reducers/user-slice";
+import { useAppSelector } from "../../store/hooks";
 
 export const Protected = ({ element }: { element: JSX.Element }) => {
   const location = useLocation();
-  const auth = useAuth();
+  const userState = useAppSelector(selectUser);
 
-  return auth.isLoggedIn ? (
+  return userState.isLoggedIn ? (
     element
   ) : (
     <Navigate to="/login" state={{ from: location }} replace />
